@@ -3,11 +3,16 @@ package logging
 import (
 	"io"
 	"log"
-	"log/slog"
 	"os"
 )
 
-var logger *slog.Logger
+var (
+	ErrorLogger *log.Logger
+	InfoLogger  *log.Logger
+	WarnLogger  *log.Logger
+)
+
+// var logger *slog.Logger
 var logFile io.WriteCloser
 
 func init() {
@@ -19,21 +24,18 @@ func init() {
 		filename = fileName
 	}
 
-	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
-
 	file, err := os.OpenFile(filename, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
 		log.Fatal(err)
 	}
 	logFile = file
 
-	textHandler := slog.NewTextHandler(file, nil)
-	logger = slog.New(textHandler)
-	slog.SetDefault(logger)
-}
+	log.SetOutput(logFile)
+	flags := log.Ldate | log.Ltime | log.Lshortfile
 
-func GetLogger() *slog.Logger {
-	return logger
+	WarnLogger = log.New(logFile, "WARN: ", flags)
+	InfoLogger = log.New(logFile, "INFO: ", flags)
+	ErrorLogger = log.New(logFile, "ERROR: ", flags)
 }
 
 func CloseLogger() {

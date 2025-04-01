@@ -3,3 +3,7 @@ cmd/cmd
 .idea
 .env
 .env.*
+*.pdf
+*.txt
+cmd/extractor/extractor
+extractor
