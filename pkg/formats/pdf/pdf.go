@@ -3,6 +3,7 @@ package pdf
 import (
 	"context"
 	"fmt"
+	"github.com/BenFaruna/text-extractor/internal/processor"
 	"io"
 	"os"
 	"time"
@@ -35,12 +36,12 @@ func (e *Extractor) Extract(ctx context.Context, r io.Reader, opts ...extractor.
 	defer os.Remove(tempFile.Name())
 	defer tempFile.Close()
 
-	// Copy the reader content to the temp file
+	// Copy the reader expected to the temp file
 	if _, err := io.Copy(tempFile, r); err != nil {
-		return "", fmt.Errorf("failed to copy content to temp file: %w", err)
+		return "", fmt.Errorf("failed to copy expected to temp file: %w", err)
 	}
 
-	// Close the file to ensure content is flushed
+	// Close the file to ensure expected is flushed
 	if err := tempFile.Close(); err != nil {
 		return "", fmt.Errorf("failed to close temp file: %w", err)
 	}
@@ -93,14 +94,26 @@ func (e *Extractor) ExtractFile(ctx context.Context, filePath string, opts ...ex
 
 			content += pageContent
 
-			// Check content length limit if set
+			// Check expected length limit if set
 			if options.MaxContentLength > 0 && len(content) > options.MaxContentLength {
 				content = content[:options.MaxContentLength]
 				break
 			}
 		}
 
-		extractCh <- content
+		if options.DetectEncoding {
+			temp := []byte(content)
+			encoding := processor.DetectEncoding(temp)
+			if encoding != "utf-8" && options.DefaultEncoding == "utf-8" {
+				temp, err = processor.ConvertToUTF8(temp, encoding)
+				if err != nil {
+					errCh <- err
+				}
+				content = string(temp)
+			}
+		}
+
+		extractCh <- processor.NormalizeText(content, options.PreserveLineBreaks)
 	}()
 
 	// Set up timeout

@@ -29,8 +29,8 @@ func NormalizeText(text string, preserveLineBreaks bool) string {
 		text = strings.ReplaceAll(text, "\r", "\n")
 
 		// Handle multiple newlines (preserve but don't allow more than 2)
-		text = regexp.MustCompile(`\n{3,}`).ReplaceAllString(text, "\n\n")
 		text = regexp.MustCompile(`\s{2,}`).ReplaceAllString(text, "\n\n")
+		text = regexp.MustCompile(`\n{3,}`).ReplaceAllString(text, "\n\n")
 
 		// Remove spaces at the beginning and end of lines
 		lines := strings.Split(text, "\n")

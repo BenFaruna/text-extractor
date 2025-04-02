@@ -8,6 +8,7 @@ import (
 	_ "github.com/BenFaruna/text-extractor/internal/logging"
 	"github.com/BenFaruna/text-extractor/pkg/extractor"
 	"github.com/BenFaruna/text-extractor/pkg/formats/pdf"
+	"github.com/BenFaruna/text-extractor/pkg/formats/text"
 	"os"
 	"path/filepath"
 	"strings"
@@ -37,7 +38,7 @@ func main() {
 	manager.Register("pdf", pdf.New())
 	//manager.Register("docx", docx.New())
 	//manager.Register("html", html.New())
-	//manager.Register("txt", plaintext.New())
+	manager.Register("txt", text.New())
 
 	// Determine format from file extension
 	ext := strings.ToLower(filepath.Ext(*filePath))
