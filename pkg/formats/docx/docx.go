@@ -7,6 +7,7 @@ import (
 	"github.com/BenFaruna/text-extractor/internal/processor"
 	"github.com/BenFaruna/text-extractor/pkg/extractor"
 	"io"
+	"os"
 	"time"
 )
 
@@ -22,8 +23,25 @@ func (e *Extractor) Extract(ctx context.Context, r io.Reader, opts ...extractor.
 	for _, opt := range opts {
 		opt(&options)
 	}
-	//TODO implement me
-	panic("implement me")
+
+	select {
+	case <-ctx.Done():
+		return "", ctx.Err()
+	default:
+	}
+
+	tempFile, err := os.CreateTemp("", "docx-extract-*.docx")
+	if err != nil {
+		return "", fmt.Errorf("failed to create temp file: %w", err)
+	}
+	defer os.Remove(tempFile.Name())
+	defer tempFile.Close()
+
+	if _, err = io.Copy(tempFile, r); err != nil {
+		return "", fmt.Errorf("failed to copy docx: %w", err)
+	}
+
+	return e.ExtractFile(ctx, tempFile.Name(), opts...)
 }
 
 func (e *Extractor) ExtractFile(ctx context.Context, filePath string, opts ...extractor.Option) (string, error) {

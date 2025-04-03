@@ -2,10 +2,10 @@ package docx
 
 import (
 	"context"
+	"io"
+	"os"
 	"strings"
 	"testing"
-
-	e "github.com/BenFaruna/text-extractor/pkg/extractor"
 )
 
 type testCase struct {
@@ -24,7 +24,7 @@ func TestExtractor_DocxExtractFile(t *testing.T) {
 	for _, tc := range testCases {
 		path := strings.Split(tc.filePath, "/")
 		t.Run(path[4], func(t *testing.T) {
-			output, err := extractor.ExtractFile(context.Background(), tc.filePath, e.WithPreserveFormatting(false))
+			output, err := extractor.ExtractFile(context.Background(), tc.filePath)
 			if err != nil {
 				t.Errorf("ExtractFile() error = %v", err)
 			}
@@ -34,4 +34,29 @@ func TestExtractor_DocxExtractFile(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestExtractor_DocxExtract(t *testing.T) {
+	extractor := &Extractor{}
+	for _, tc := range testCases {
+		path := strings.Split(tc.filePath, "/")
+		t.Run(path[4], func(t *testing.T) {
+			r := createReader(t, tc.filePath)
+			output, err := extractor.Extract(context.Background(), r)
+			if err != nil {
+				t.Errorf("Extract() error = %v", err)
+			}
+			if output != tc.expected {
+				t.Errorf("Extract() output = %s, want %s", output, tc.expected)
+			}
+		})
+	}
+}
+
+func createReader(t testing.TB, filePath string) io.Reader {
+	f, err := os.Open(filePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return f
 }
