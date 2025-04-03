@@ -4,9 +4,10 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"github.com/BenFaruna/text-extractor/internal/logging"
+	. "github.com/BenFaruna/text-extractor/internal/logging"
 	_ "github.com/BenFaruna/text-extractor/internal/logging"
 	"github.com/BenFaruna/text-extractor/pkg/extractor"
+	"github.com/BenFaruna/text-extractor/pkg/formats/docx"
 	"github.com/BenFaruna/text-extractor/pkg/formats/pdf"
 	"github.com/BenFaruna/text-extractor/pkg/formats/text"
 	"os"
@@ -26,7 +27,7 @@ func main() {
 
 	// Check if file path is provided
 	if *filePath == "" {
-		logging.ErrorLogger.Println("File path is required")
+		ErrorLogger.Println("File path is required")
 		flag.Usage()
 		os.Exit(1)
 	}
@@ -36,7 +37,7 @@ func main() {
 
 	// Register format extractors
 	manager.Register("pdf", pdf.New())
-	//manager.Register("docx", docx.New())
+	manager.Register("docx", docx.New())
 	//manager.Register("html", html.New())
 	manager.Register("txt", text.New())
 
@@ -47,7 +48,7 @@ func main() {
 	// Get the appropriate extractor
 	formatExtractor, ok := manager.Get(ext)
 	if !ok {
-		logging.ErrorLogger.Printf("Unsupported file format: %s\n", ext)
+		ErrorLogger.Printf("Unsupported file format: %s\n", ext)
 		os.Exit(1)
 	}
 
@@ -56,28 +57,28 @@ func main() {
 	defer cancel()
 
 	// Extract text with options
-	text, err := formatExtractor.ExtractFile(ctx, *filePath,
+	t, err := formatExtractor.ExtractFile(ctx, *filePath,
 		extractor.WithPreserveLineBreaks(*preserveLineBreaks),
 		extractor.WithPreserveFormatting(*preserveFormatting),
 	)
 
 	if err != nil {
-		logging.ErrorLogger.Printf("Text extraction failed: %v\n", err)
+		ErrorLogger.Printf("Text extraction failed: %v\n", err)
 		os.Exit(1)
 	}
 
 	// Output the extracted text
 	if *outputFile != "" {
-		err := os.WriteFile(*outputFile, []byte(text), 0644)
+		err := os.WriteFile(*outputFile, []byte(t), 0644)
 		if err != nil {
-			logging.ErrorLogger.Printf("Writing to output file failed: %v\n", err)
+			ErrorLogger.Printf("Writing to output file failed: %v\n", err)
 			os.Exit(1)
 		}
-		logging.InfoLogger.Printf("Text extracted successfully to: %s\n", *outputFile)
+		InfoLogger.Printf("Text extracted successfully to: %s\n", *outputFile)
 	} else {
-		fmt.Println(text)
+		fmt.Println(t)
 	}
-	//fmt.Println(text)
+	//fmt.Println(t)
 
-	logging.CloseLogger()
+	CloseLogger()
 }

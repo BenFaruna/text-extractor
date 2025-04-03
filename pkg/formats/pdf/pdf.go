@@ -76,6 +76,9 @@ func (e *Extractor) ExtractFile(ctx context.Context, filePath string, opts ...ex
 	extractCh := make(chan string, 1)
 	errCh := make(chan error, 1)
 
+	defer close(errCh)
+	defer close(extractCh)
+
 	go func() {
 		var content string
 		totalPage := r.NumPage()
