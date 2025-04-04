@@ -22,6 +22,7 @@ func main() {
 	preserveFormatting := flag.Bool("preserve-formatting", false, "Preserve text formatting")
 	timeoutSeconds := flag.Int("timeout", 60, "Timeout in seconds")
 	outputFile := flag.String("output", "", "Output file (if not provided, prints to stdout)")
+	fileFormat := flag.String("file-format", "", "Output file format (e.g txt, docx, pdf)")
 
 	flag.Parse()
 
@@ -41,9 +42,15 @@ func main() {
 	//manager.Register("html", html.New())
 	manager.Register("txt", text.New())
 
-	// Determine format from file extension
-	ext := strings.ToLower(filepath.Ext(*filePath))
-	ext = strings.TrimPrefix(ext, ".")
+	var ext string
+
+	if *fileFormat != "" {
+		ext = strings.ToLower(*fileFormat)
+	} else {
+		// Determine format from file extension
+		ext = strings.ToLower(filepath.Ext(*filePath))
+		ext = strings.TrimPrefix(ext, ".")
+	}
 
 	// Get the appropriate extractor
 	formatExtractor, ok := manager.Get(ext)
