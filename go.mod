@@ -10,3 +10,9 @@ require (
 	baliance.com/gooxml v1.0.1
 	golang.org/x/text v0.23.0
 )
+
+require (
+	github.com/JohannesKaufmann/dom v0.2.0 // indirect
+	github.com/JohannesKaufmann/html-to-markdown/v2 v2.3.1 // indirect
+	golang.org/x/net v0.38.0 // indirect
+)

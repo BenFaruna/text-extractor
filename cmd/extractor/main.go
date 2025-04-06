@@ -8,6 +8,7 @@ import (
 	_ "github.com/BenFaruna/text-extractor/internal/logging"
 	"github.com/BenFaruna/text-extractor/pkg/extractor"
 	"github.com/BenFaruna/text-extractor/pkg/formats/docx"
+	"github.com/BenFaruna/text-extractor/pkg/formats/html"
 	"github.com/BenFaruna/text-extractor/pkg/formats/pdf"
 	"github.com/BenFaruna/text-extractor/pkg/formats/text"
 	"os"
@@ -39,7 +40,7 @@ func main() {
 	// Register format extractors
 	manager.Register("pdf", pdf.New())
 	manager.Register("docx", docx.New())
-	//manager.Register("html", html.New())
+	manager.Register("html", html.New())
 	manager.Register("txt", text.New())
 
 	var ext string

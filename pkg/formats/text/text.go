@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"github.com/BenFaruna/text-extractor/internal/logging"
 	"github.com/BenFaruna/text-extractor/internal/processor"
 	"github.com/BenFaruna/text-extractor/pkg/extractor"
 	"io"
@@ -92,7 +91,6 @@ func (e *Extractor) ExtractFile(ctx context.Context, filePath string, opts ...ex
 
 	f, err := os.Open(filePath)
 	if err != nil {
-		logging.ErrorLogger.Printf("%v", err.Error())
 		return "", fmt.Errorf("file open error: %w", err)
 	}
 	defer f.Close()
@@ -105,7 +103,6 @@ func (e *Extractor) ExtractFile(ctx context.Context, filePath string, opts ...ex
 
 		_, err = io.Copy(temp, f)
 		if err != nil {
-			logging.ErrorLogger.Printf("%v", err.Error())
 			errCh <- err
 		}
 

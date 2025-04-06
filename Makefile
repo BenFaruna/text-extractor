@@ -25,3 +25,7 @@ test-text:
 test-doc:
 	@echo "Running document tests..."
 	@go test ./pkg/formats/docx -v
+
+test-html:
+	@echo "Running html tests..."
+	@go test ./pkg/formats/html -v
