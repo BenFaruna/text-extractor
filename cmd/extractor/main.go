@@ -23,7 +23,7 @@ func main() {
 	preserveFormatting := flag.Bool("preserve-formatting", false, "Preserve text formatting")
 	timeoutSeconds := flag.Int("timeout", 60, "Timeout in seconds")
 	outputFile := flag.String("output", "", "Output file (if not provided, prints to stdout)")
-	fileFormat := flag.String("file-format", "", "Output file format (e.g txt, docx, pdf)")
+	fileFormat := flag.String("file-format", "", "Input file format (e.g txt, docx, pdf, html)")
 
 	flag.Parse()
 
